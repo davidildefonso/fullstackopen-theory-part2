@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Note from "./components/Note.js";
+import Notification from "./components/Notification.js";
 import noteService from './services/notes.js';
-
+import Footer from './components/Footer.js';
 
 
 const App = () => {
@@ -11,6 +12,7 @@ const App = () => {
     'a new note...'
   );
 	const [showAll, setShowAll] = useState(false);
+	const [errorMessage, setErrorMessage] = useState(null);
 
 	const hook = () => {		
 		noteService
@@ -61,9 +63,12 @@ const App = () => {
 							setNotes(notes.map( note => note.id === id ? data : note ));
 					})
 					.catch(error => {
-								alert(
-									`the note '${targetNote.content}' was already deleted from server`
+							  setErrorMessage(
+									`Note '${targetNote.content}' was already removed from server`
 								)
+								setTimeout(() => {
+									setErrorMessage(null)
+								}, 5000)
 								setNotes(notes.filter(n => n.id !== id))
 					});
 		
@@ -73,6 +78,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
+			<Notification message={errorMessage} />
 			<div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all' }
@@ -87,6 +93,7 @@ const App = () => {
         <input value={newNote} onChange={handleNoteChange} />
         <button type="submit">save</button>
       </form> 
+			<Footer  />
     </div>
   )
 };
